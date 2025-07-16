@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anime Higher Lower Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Score displays in corners -->
+    <div class="score-corner top-left">
+      <span class="score-label">High Score:</span>
+      <span id="high-score" class="score-value">0</span>
+    </div>
+
+    <div class="score-corner top-right">
+      <span class="score-label">Score:</span>
+      <span id="current-score" class="score-value">0</span>
+    </div>
+
+    <!-- Main game container -->
+    <div class="game-container">
+      <!-- Left side -->
+      <div class="game-half left-half">
+        <div class="character-image">
+          <img id="imgA" alt="Character A" />
+        </div>
+        <div class="character-info">
+          <h2 id="nameA" class="character-name"></h2>
+          <p id="animeA" class="anime-title"></p>
+          <div class="stat-display">
+            <span class="stat-label">has</span>
+            <div class="stat-number" id="favA"></div>
+            <span class="stat-label">favorites</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- VS Circle -->
+      <div class="vs-container">
+        <div class="vs-circle">VS</div>
+      </div>
+
+      <!-- Right side -->
+      <div class="game-half right-half">
+        <div class="flip-card" id="cardB">
+          <div class="card-inner">
+            <!-- Front of card (before guess) -->
+            <div class="card-front">
+              <div class="character-image">
+                <img id="imgB" alt="Character B" />
+              </div>
+              <div class="character-info">
+                <h2 id="nameB" class="character-name"></h2>
+                <p id="animeB" class="anime-title"></p>
+                <div class="stat-display">
+                  <span class="stat-label">has</span>
+                  <div class="stat-number hidden-stat">?</div>
+                  <span class="stat-label">favorites</span>
+                </div>
+                <div class="button-container">
+                  <button id="higher-btn" class="choice-btn higher">
+                    <span class="btn-arrow">▲</span>
+                    <span class="btn-text">Higher</span>
+                  </button>
+                  <button id="lower-btn" class="choice-btn lower">
+                    <span class="btn-arrow">▼</span>
+                    <span class="btn-text">Lower</span>
+                  </button>
+                </div>
+                <p class="comparison-text">
+                  favorites than <span id="comparisonName"></span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Back of card (after guess) -->
+            <div class="card-back">
+              <div class="character-image">
+                <img id="imgB-back" alt="Character B" />
+              </div>
+              <div class="character-info">
+                <h2 id="nameB-back" class="character-name"></h2>
+                <p id="animeB-back" class="anime-title"></p>
+                <div class="stat-display">
+                  <span class="stat-label">has</span>
+                  <div class="stat-number" id="favB-back"></div>
+                  <span class="stat-label">favorites</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div id="game-over-overlay" class="overlay hidden">
+      <div class="game-over-content">
+        <h2>Game Over!</h2>
+        <div class="final-score">
+          <p>Your Score: <span id="final-score">0</span></p>
+          <p id="high-score-message" class="hidden">🎉 New High Score! 🎉</p>
+        </div>
+        <button id="play-again-btn" class="play-again-btn">Play Again</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
