@@ -43,8 +43,8 @@ Character popularity data is sourced from **MyAnimeList.net**, accessed via the 
 ## 📦 Setup (for developers)
 
 ```bash
-git clone https://github.com/yourusername/anime-higher-lower.git
-cd anime-higher-lower
+git clone https://github.com/Yuvraj-Malik/Anime-Higher-Lower
+cd Anime-Higher-Lower
 # Open index.html in Live Server or any browser
 ```
 
