@@ -3,55 +3,76 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Anime Higher Lower - Ultimate Edition</title>
+    <title>Anime Higher Lower</title>
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-
+      :root {
+        --primary: #667eea;
+        --secondary: #f5576c;
+        --success: #10b981;
+        --error: #ef4444;
+        --warning: #fbbf24;
+        --bg: #0a0e27;
+      }
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: #0a0e27;
+        background: var(--bg);
         color: #fff;
         min-height: 100vh;
         overflow-x: hidden;
       }
-
-      /* Animated Background */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
       .background {
         position: fixed;
         inset: 0;
         z-index: 0;
       }
-
       .bg-blob {
         position: absolute;
-        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        border-radius: 40% 60% 70% 30%/40% 50% 60% 50%;
         opacity: 0.08;
-        animation: blob 8s infinite;
+        will-change: transform;
       }
-
+      @media (prefers-reduced-motion: no-preference) {
+        .bg-blob {
+          animation: blob 8s infinite;
+        }
+        .blob-1 {
+          animation-duration: 10s;
+        }
+        .blob-2 {
+          animation-duration: 12s;
+          animation-delay: -2s;
+        }
+      }
       .blob-1 {
         width: 400px;
         height: 400px;
         background: linear-gradient(135deg, #667eea, #764ba2);
         top: -100px;
         left: -100px;
-        animation-duration: 10s;
       }
-
       .blob-2 {
         width: 350px;
         height: 350px;
         background: linear-gradient(135deg, #f093fb, #f5576c);
         bottom: -50px;
         right: -50px;
-        animation-duration: 12s;
-        animation-delay: -2s;
       }
-
       @keyframes blob {
         0%,
         100% {
@@ -64,19 +85,18 @@
           transform: translate(-20px, 20px) rotate(240deg);
         }
       }
-
-      /* Header */
       .header {
         position: relative;
         z-index: 10;
-        padding: 25px 40px;
+        padding: 20px 40px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        flex-wrap: wrap;
+        gap: 20px;
       }
-
       .logo {
         font-size: 28px;
         font-weight: 900;
@@ -86,26 +106,48 @@
         background-clip: text;
         letter-spacing: -1px;
       }
-
-      .score-container {
+      .header-actions {
         display: flex;
-        gap: 50px;
+        gap: 15px;
         align-items: center;
       }
-
+      .tutorial-link {
+        background: rgba(102, 126, 234, 0.2);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        color: #667eea;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+      }
+      .tutorial-link:hover,
+      .tutorial-link:focus-visible {
+        background: rgba(102, 126, 234, 0.4);
+        border-color: rgba(102, 126, 234, 0.6);
+        transform: translateY(-2px);
+        outline: 3px solid rgba(102, 126, 234, 0.4);
+        outline-offset: 2px;
+      }
+      .score-container {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+      }
       .score-item {
         text-align: right;
       }
-
       .score-label {
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 2px;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.6);
         margin-bottom: 6px;
         font-weight: 600;
       }
-
       .score-value {
         font-size: 32px;
         font-weight: 800;
@@ -114,7 +156,6 @@
         -webkit-text-fill-color: transparent;
         background-clip: text;
       }
-
       .streak-badge {
         background: linear-gradient(135deg, #fbbf24, #f59e0b);
         color: #000;
@@ -125,8 +166,15 @@
         text-transform: uppercase;
         letter-spacing: 1px;
         margin-top: 4px;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+        display: inline-block;
       }
-
+      .streak-badge.visible {
+        opacity: 1;
+        transform: scale(1);
+      }
       .sound-toggle {
         position: fixed;
         bottom: 30px;
@@ -144,15 +192,16 @@
         font-size: 24px;
         transition: all 0.3s ease;
       }
-
-      .sound-toggle:hover {
+      .sound-toggle:hover,
+      .sound-toggle:focus-visible {
         background: rgba(102, 126, 234, 0.4);
         border-color: rgba(102, 126, 234, 0.6);
         transform: scale(1.1);
+        outline: 3px solid rgba(102, 126, 234, 0.4);
+        outline-offset: 2px;
       }
-
-      /* Tutorial Modal */
-      .tutorial-modal {
+      .tutorial-modal,
+      .modal {
         position: fixed;
         inset: 0;
         background: rgba(10, 14, 39, 0.95);
@@ -164,17 +213,17 @@
         opacity: 0;
         transition: opacity 0.3s ease;
       }
-
-      .tutorial-modal.active {
+      .tutorial-modal.active,
+      .modal.active {
         display: flex;
         opacity: 1;
       }
-
-      .tutorial-content {
+      .tutorial-content,
+      .modal-content {
         background: linear-gradient(
           135deg,
-          rgba(20, 25, 50, 0.9),
-          rgba(30, 35, 65, 0.9)
+          rgba(20, 25, 50, 0.95),
+          rgba(30, 35, 65, 0.95)
         );
         border: 2px solid rgba(102, 126, 234, 0.3);
         border-radius: 32px;
@@ -183,11 +232,28 @@
         max-width: 500px;
         width: 90%;
         backdrop-filter: blur(20px);
-        animation: modalPop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+        max-height: 90vh;
+        overflow-y: auto;
       }
-
-      .tutorial-title {
+      @media (prefers-reduced-motion: no-preference) {
+        .tutorial-content,
+        .modal-content {
+          animation: modalPop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+      }
+      @keyframes modalPop {
+        from {
+          opacity: 0;
+          transform: scale(0.8) translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      .tutorial-title,
+      .modal-title {
         font-size: 36px;
         font-weight: 900;
         margin-bottom: 16px;
@@ -196,22 +262,22 @@
         -webkit-text-fill-color: transparent;
         background-clip: text;
       }
-
+      .modal-title {
+        font-size: 42px;
+      }
       .tutorial-steps {
         text-align: left;
         margin: 25px 0;
         font-size: 14px;
         line-height: 1.8;
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.8);
       }
-
       .tutorial-steps li {
         margin-bottom: 12px;
         list-style: none;
         padding-left: 30px;
         position: relative;
       }
-
       .tutorial-steps li:before {
         content: "→";
         position: absolute;
@@ -219,8 +285,17 @@
         color: #667eea;
         font-weight: bold;
       }
-
-      .tutorial-btn {
+      .keyboard-hint {
+        background: rgba(102, 126, 234, 0.1);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        padding: 12px;
+        border-radius: 12px;
+        margin-top: 16px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .tutorial-btn,
+      .btn-play-again {
         background: linear-gradient(135deg, #667eea, #f5576c);
         color: #fff;
         padding: 14px 40px;
@@ -233,24 +308,26 @@
         letter-spacing: 1.5px;
         transition: all 0.3s ease;
         margin-top: 20px;
+        min-height: 48px;
       }
-
-      .tutorial-btn:hover {
+      .tutorial-btn:hover,
+      .tutorial-btn:focus-visible,
+      .btn-play-again:hover,
+      .btn-play-again:focus-visible {
         transform: translateY(-3px);
         box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5);
+        outline: 3px solid rgba(102, 126, 234, 0.4);
+        outline-offset: 2px;
       }
-
-      /* Main Container */
       .container {
         position: relative;
         z-index: 5;
-        min-height: calc(100vh - 80px);
+        min-height: calc(100vh - 100px);
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 40px 20px;
       }
-
       .game-area {
         display: grid;
         grid-template-columns: 1fr auto 1fr;
@@ -259,8 +336,6 @@
         max-width: 1400px;
         align-items: center;
       }
-
-      /* Character Card */
       .character-card {
         position: relative;
         height: 600px;
@@ -269,30 +344,27 @@
         backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: default;
+        will-change: transform;
       }
-
-      .character-card:hover:not(.disabled) {
-        transform: translateY(-12px);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 30px 80px rgba(102, 126, 234, 0.2);
+      @media (prefers-reduced-motion: no-preference) {
+        .character-card:hover:not(.disabled) {
+          transform: translateY(-12px) translateZ(0);
+          border-color: rgba(255, 255, 255, 0.2);
+          box-shadow: 0 30px 80px rgba(102, 126, 234, 0.2);
+        }
       }
-
       .card-bg {
         position: absolute;
         inset: 0;
         z-index: 0;
       }
-
       .card-bg img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         filter: blur(40px) brightness(0.4);
         transform: scale(1.3);
-        transition: filter 0.6s ease;
       }
-
       .card-overlay {
         position: absolute;
         inset: 0;
@@ -303,7 +375,6 @@
         );
         z-index: 1;
       }
-
       .card-content {
         position: relative;
         z-index: 2;
@@ -313,7 +384,6 @@
         padding: 40px 30px;
         justify-content: space-between;
       }
-
       .character-img-wrapper {
         flex: 1;
         display: flex;
@@ -321,7 +391,6 @@
         justify-content: center;
         margin-bottom: 20px;
       }
-
       .character-img {
         width: 280px;
         height: 340px;
@@ -331,57 +400,65 @@
         box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(10px);
         transition: all 0.4s ease;
+        background: rgba(0, 0, 0, 0.3);
+        position: relative;
       }
-
-      .character-card:hover:not(.disabled) .character-img {
-        border-color: rgba(255, 255, 255, 0.3);
-        box-shadow: 0 30px 80px rgba(102, 126, 234, 0.3);
+      .character-img.loading::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        animation: shimmer 1.5s infinite;
       }
-
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
       .character-img img {
         width: 100%;
         height: 100%;
         object-fit: cover;
       }
-
       .character-info {
         text-align: center;
       }
-
       .character-name {
-        font-size: 28px;
+        font-size: 26px;
         font-weight: 800;
         margin-bottom: 8px;
         text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
       }
-
       .character-anime {
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255, 255, 255, 0.7);
         margin-bottom: 20px;
         font-weight: 500;
       }
-
       .stat-box {
         background: rgba(0, 0, 0, 0.4);
-        height: auto;
-        width: 100%;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 16px;
         padding: 20px;
         transition: all 0.4s ease;
       }
-
       .stat-label {
         font-size: 11px;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.8);
         text-transform: uppercase;
         letter-spacing: 1.5px;
         font-weight: 600;
         margin-bottom: 8px;
       }
-
       .stat-number {
         font-size: 35px;
         font-weight: 800;
@@ -389,24 +466,26 @@
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
         transition: all 0.3s ease;
       }
-
       .stat-number.hidden {
         color: rgba(255, 255, 255, 0.3);
         font-size: 48px;
         font-weight: 400;
         letter-spacing: 8px;
       }
-
       .stat-number.correct {
-        color: #10b981;
-        animation: pulse 0.6s ease;
+        color: var(--success);
       }
-
       .stat-number.incorrect {
-        color: #ef4444;
-        animation: shake 0.6s ease;
+        color: var(--error);
       }
-
+      @media (prefers-reduced-motion: no-preference) {
+        .stat-number.correct {
+          animation: pulse 0.6s ease;
+        }
+        .stat-number.incorrect {
+          animation: shake 0.6s ease;
+        }
+      }
       @keyframes pulse {
         0%,
         100% {
@@ -416,7 +495,6 @@
           transform: scale(1.15);
         }
       }
-
       @keyframes shake {
         0%,
         100% {
@@ -429,8 +507,16 @@
           transform: translateX(10px);
         }
       }
-
-      /* VS Circle */
+      .comparison-info {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 8px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .comparison-info.visible {
+        opacity: 1;
+      }
       .vs-circle {
         width: 160px;
         height: 160px;
@@ -445,12 +531,16 @@
         color: #667eea;
         position: relative;
         flex-shrink: 0;
-        animation: float 3s ease-in-out infinite;
         overflow: hidden;
         transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         backdrop-filter: blur(10px);
+        will-change: transform;
       }
-
+      @media (prefers-reduced-motion: no-preference) {
+        .vs-circle {
+          animation: float 3s ease-in-out infinite;
+        }
+      }
       @keyframes float {
         0%,
         100% {
@@ -460,7 +550,6 @@
           transform: translateY(-20px);
         }
       }
-
       .vs-circle::before {
         content: "";
         position: absolute;
@@ -470,17 +559,16 @@
         transition: all 0.8s ease;
         z-index: 0;
       }
-
-      .vs-circle.correct::before {
-        background: #10b981;
-        animation: fillCircle 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      @media (prefers-reduced-motion: no-preference) {
+        .vs-circle.correct::before {
+          background: var(--success);
+          animation: fillCircle 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .vs-circle.incorrect::before {
+          background: var(--error);
+          animation: fillCircle 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
       }
-
-      .vs-circle.incorrect::before {
-        background: #ef4444;
-        animation: fillCircle 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-      }
-
       @keyframes fillCircle {
         from {
           clip-path: circle(0% at center);
@@ -489,7 +577,6 @@
           clip-path: circle(100% at center);
         }
       }
-
       .vs-circle-content {
         position: relative;
         z-index: 2;
@@ -501,18 +588,15 @@
         align-items: center;
         justify-content: center;
       }
-
       .vs-text {
         opacity: 1;
         transition: opacity 0.3s ease;
         position: absolute;
       }
-
       .vs-text.hidden {
         opacity: 0;
         pointer-events: none;
       }
-
       .result-icon {
         font-size: 70px;
         opacity: 0;
@@ -520,56 +604,36 @@
         position: absolute;
         font-weight: 800;
       }
-
       .result-icon.show {
         opacity: 1;
       }
-
       .vs-circle.correct {
-        border-color: #10b981;
+        border-color: var(--success);
         color: #fff;
         box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
       }
-
-      .vs-circle.correct .result-icon {
-        color: #fff;
-      }
-
       .vs-circle.incorrect {
-        border-color: #ef4444;
+        border-color: var(--error);
         color: #fff;
         box-shadow: 0 0 40px rgba(239, 68, 68, 0.3);
       }
-
-      .vs-circle.incorrect .result-icon {
-        color: #fff;
-      }
-
-      /* Comparison Text */
       .comparison-text {
-        font-size: 18px;
+        font-size: 17px;
         font-weight: 600;
         text-align: center;
         line-height: 1.6;
         max-width: 300px;
         letter-spacing: 0.5px;
       }
-
-      .comparison-text span {
-        display: inline;
-      }
-
-      /* Buttons */
       .button-group {
         display: flex;
         flex-direction: column;
         gap: 16px;
         margin-top: 30px;
       }
-
       .btn {
         padding: 16px 40px;
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 700;
         border: 2px solid;
         border-radius: 14px;
@@ -580,10 +644,10 @@
         background: transparent;
         color: #fff;
         min-width: 220px;
+        min-height: 48px;
         position: relative;
         overflow: hidden;
       }
-
       .btn::before {
         content: "";
         position: absolute;
@@ -593,48 +657,50 @@
         z-index: 0;
         transition: opacity 0.3s ease;
       }
-
       .btn > * {
         position: relative;
         z-index: 1;
       }
-
       .btn-higher {
-        border-color: #10b981;
-        color: #10b981;
+        border-color: var(--success);
+        color: var(--success);
       }
-
-      .btn-higher:hover:not(:disabled) {
-        border-color: #10b981;
+      .btn-higher:hover:not(:disabled),
+      .btn-higher:focus-visible {
+        border-color: var(--success);
         box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
         transform: translateY(-4px);
+        outline: 3px solid rgba(16, 185, 129, 0.3);
+        outline-offset: 2px;
       }
-
       .btn-higher:hover:not(:disabled)::before {
         opacity: 0.2;
       }
-
-      .btn-lower {
-        border-color: #ef4444;
-        color: #ef4444;
+      .btn-higher:active:not(:disabled) {
+        transform: translateY(-2px) scale(0.98);
       }
-
-      .btn-lower:hover:not(:disabled) {
-        border-color: #ef4444;
+      .btn-lower {
+        border-color: var(--error);
+        color: var(--error);
+      }
+      .btn-lower:hover:not(:disabled),
+      .btn-lower:focus-visible {
+        border-color: var(--error);
         box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
         transform: translateY(-4px);
+        outline: 3px solid rgba(239, 68, 68, 0.3);
+        outline-offset: 2px;
       }
-
       .btn-lower:hover:not(:disabled)::before {
         opacity: 0.2;
       }
-
+      .btn-lower:active:not(:disabled) {
+        transform: translateY(-2px) scale(0.98);
+      }
       .btn:disabled {
         opacity: 0.4;
         cursor: not-allowed;
       }
-
-      /* Milestone Badge */
       .milestone-badge {
         position: fixed;
         top: 100px;
@@ -647,16 +713,19 @@
         font-size: 13px;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        animation: slideInRight 0.6s ease, pulse 2s ease-in-out 0.6s 2;
         box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
         z-index: 20;
         display: none;
       }
-
+      @media (prefers-reduced-motion: no-preference) {
+        .milestone-badge.show {
+          display: block;
+          animation: slideInRight 0.6s ease, pulse 2s ease-in-out 0.6s 2;
+        }
+      }
       .milestone-badge.show {
         display: block;
       }
-
       @keyframes slideInRight {
         from {
           opacity: 0;
@@ -667,86 +736,11 @@
           transform: translateX(0);
         }
       }
-
-      /* Modal */
-      .modal {
-        position: fixed;
-        inset: 0;
-        background: rgba(10, 14, 39, 0.95);
-        backdrop-filter: blur(20px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .modal.active {
-        display: flex;
-        opacity: 1;
-      }
-
-      .modal-content {
-        background: linear-gradient(
-          135deg,
-          rgba(20, 25, 50, 0.9),
-          rgba(30, 35, 65, 0.9)
-        );
-        border: 2px solid rgba(102, 126, 234, 0.3);
-        border-radius: 32px;
-        padding: 60px;
-        text-align: center;
-        max-width: 550px;
-        width: 90%;
-        backdrop-filter: blur(20px);
-        animation: modalPop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
-      }
-
-      @keyframes modalPop {
-        from {
-          opacity: 0;
-          transform: scale(0.8) translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1) translateY(0);
-        }
-      }
-
-      .modal-icon {
-        font-size: 72px;
-        margin-bottom: 24px;
-        animation: iconBounce 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      @keyframes iconBounce {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-20px);
-        }
-      }
-
-      .modal-title {
-        font-size: 48px;
-        font-weight: 900;
-        margin-bottom: 12px;
-        background: linear-gradient(135deg, #667eea, #f5576c);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
       .modal-subtitle {
-        font-size: 16px;
-        color: rgba(255, 255, 255, 0.6);
-        margin-bottom: 32px;
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 28px;
       }
-
       .new-record {
         display: inline-block;
         background: linear-gradient(135deg, #fbbf24, #f59e0b);
@@ -757,10 +751,13 @@
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        margin-bottom: 28px;
-        animation: badgeBounce 1s ease infinite alternate;
+        margin-bottom: 24px;
       }
-
+      @media (prefers-reduced-motion: no-preference) {
+        .new-record {
+          animation: badgeBounce 1s ease infinite alternate;
+        }
+      }
       @keyframes badgeBounce {
         from {
           transform: scale(1);
@@ -769,136 +766,168 @@
           transform: scale(1.08);
         }
       }
-
       .new-record.hidden {
         display: none;
       }
-
       .final-score {
-        font-size: 80px;
+        font-size: 72px;
         font-weight: 900;
-        margin: 24px 0;
+        margin: 20px 0;
         color: #fff;
         text-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
       }
-
       .stats-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 16px;
-        margin-bottom: 32px;
+        margin-bottom: 28px;
       }
-
       .stat-item {
         background: rgba(0, 0, 0, 0.3);
         border: 1px solid rgba(102, 126, 234, 0.2);
         border-radius: 16px;
-        padding: 24px;
+        padding: 20px;
         backdrop-filter: blur(10px);
       }
-
       .stat-item-value {
-        font-size: 36px;
+        font-size: 32px;
         font-weight: 900;
         color: #667eea;
         margin-bottom: 8px;
       }
-
       .stat-item-label {
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.6);
         font-weight: 600;
       }
-
-      .btn-play-again {
+      .loading {
+        position: fixed;
+        inset: 0;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .loading.hidden {
+        display: none;
+      }
+      .loader {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(102, 126, 234, 0.2);
+        border-top-color: #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .loading-text {
+        font-size: 17px;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 600;
+      }
+      .error-state {
+        text-align: center;
+        padding: 40px;
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .error-title {
+        font-size: 24px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        color: var(--error);
+      }
+      .error-message {
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+      .retry-btn {
         background: linear-gradient(135deg, #667eea, #f5576c);
         color: #fff;
-        padding: 16px 50px;
+        padding: 12px 32px;
         border: none;
-        border-radius: 14px;
-        font-size: 16px;
+        border-radius: 12px;
+        font-size: 14px;
         font-weight: 700;
         cursor: pointer;
         text-transform: uppercase;
         letter-spacing: 1px;
         transition: all 0.3s ease;
-        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+        min-height: 48px;
       }
-
-      .btn-play-again:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5);
+      .retry-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
       }
-
-      /* Responsive */
       @media (max-width: 1200px) {
         .game-area {
           grid-template-columns: 1fr;
           gap: 40px;
         }
-
         .vs-circle {
           order: -1;
           margin-bottom: 20px;
         }
-
         .character-card {
           height: 550px;
         }
       }
-
       @media (max-width: 768px) {
         .header {
-          flex-direction: column;
-          gap: 20px;
-          padding: 20px;
+          padding: 15px 20px;
         }
-
+        .logo {
+          font-size: 24px;
+        }
         .score-container {
-          gap: 30px;
+          gap: 25px;
+          width: 100%;
+          justify-content: space-between;
         }
-
+        .score-value {
+          font-size: 28px;
+        }
         .character-card {
           height: 480px;
         }
-
         .character-img {
           width: 220px;
           height: 280px;
         }
-
         .character-name {
-          font-size: 24px;
+          font-size: 22px;
         }
-
         .stat-number {
-          font-size: 36px;
+          font-size: 32px;
         }
-
         .vs-circle {
           width: 130px;
           height: 130px;
           font-size: 42px;
         }
-
-        .modal-content {
-          padding: 40px 30px;
+        .modal-content,
+        .tutorial-content {
+          padding: 35px 25px;
         }
-
-        .modal-title {
-          font-size: 36px;
+        .modal-title,
+        .tutorial-title {
+          font-size: 32px;
         }
-
         .final-score {
-          font-size: 60px;
+          font-size: 54px;
         }
-
         .stats-grid {
           grid-template-columns: 1fr;
+          gap: 12px;
         }
-
         .sound-toggle {
           width: 45px;
           height: 45px;
@@ -906,75 +935,119 @@
           bottom: 20px;
           right: 20px;
         }
+        .milestone-badge {
+          top: 80px;
+          right: 20px;
+          font-size: 11px;
+          padding: 12px 18px;
+        }
+        .tutorial-link {
+          font-size: 11px;
+          padding: 6px 12px;
+        }
+      }
+      @media (max-width: 768px) and(orientation:landscape) {
+        .character-card {
+          height: 400px;
+        }
+        .character-img {
+          width: 180px;
+          height: 240px;
+        }
       }
     </style>
   </head>
   <body>
-    <!-- Animated Background -->
+    <div class="loading" id="loadingScreen">
+      <div class="loader"></div>
+      <div class="loading-text">Loading Characters...</div>
+    </div>
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+      id="announcer"
+    ></div>
     <div class="background">
       <div class="bg-blob blob-1"></div>
       <div class="bg-blob blob-2"></div>
     </div>
-
-    <!-- Sound Toggle -->
-    <button class="sound-toggle" id="soundToggle" title="Toggle Sound">
+    <button
+      class="sound-toggle"
+      id="soundToggle"
+      title="Toggle Sound"
+      aria-label="Toggle sound effects"
+    >
       🔊
     </button>
-
-    <!-- Milestone Badge -->
-    <div class="milestone-badge" id="milestoneBadge"></div>
-
-    <!-- Tutorial Modal -->
-    <div class="tutorial-modal" id="tutorialModal">
+    <div
+      class="milestone-badge"
+      id="milestoneBadge"
+      role="status"
+      aria-live="polite"
+    ></div>
+    <div
+      class="tutorial-modal"
+      id="tutorialModal"
+      role="dialog"
+      aria-labelledby="tutorialTitle"
+      aria-modal="true"
+    >
       <div class="tutorial-content">
         <div style="font-size: 48px; margin-bottom: 16px">🎮</div>
-        <h2 class="tutorial-title">How to Play</h2>
+        <h2 class="tutorial-title" id="tutorialTitle">How to Play</h2>
         <ul class="tutorial-steps">
-          <li>You'll see two anime characters</li>
+          <li>You'll see two anime characters side by side</li>
           <li>The left character's favorite count is visible</li>
           <li>Guess if the right character has MORE or FEWER favorites</li>
           <li>Get it right to continue playing</li>
           <li>One wrong guess = Game Over</li>
           <li>Build your streak to reach milestones!</li>
         </ul>
+        <div class="keyboard-hint">
+          💡 <strong>Keyboard Shortcuts:</strong> Press ↑ or W for Higher, ↓ or
+          S for Lower
+        </div>
         <button class="tutorial-btn" id="startGameBtn">Start Game</button>
       </div>
     </div>
-
-    <!-- Header -->
     <div class="header">
       <div class="logo">⚡ Anime Battle</div>
+      <div class="header-actions">
+        <button
+          class="tutorial-link"
+          id="showTutorial"
+          aria-label="Show tutorial"
+        >
+          📖 Tutorial
+        </button>
+      </div>
       <div class="score-container">
         <div class="score-item">
           <div class="score-label">Current Score</div>
-          <div class="score-value" id="score">0</div>
-          <div class="streak-badge" id="streakBadge" style="display: none">
+          <div class="score-value" id="score" aria-live="polite">0</div>
+          <div class="streak-badge" id="streakBadge" aria-live="polite">
             🔥 Streak: <span id="streakCount">0</span>
           </div>
         </div>
         <div class="score-item">
           <div class="score-label">High Score</div>
           <div class="score-value" id="highScore">0</div>
-          <div class="streak-badge" style="margin-top: 4px">
+          <div class="streak-badge" style="opacity: 1; transform: scale(1)">
             🏆 Max: <span id="maxStreak">0</span>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Main Game Area -->
     <div class="container">
       <div class="game-area">
-        <!-- Left Card -->
         <div class="character-card">
-          <div class="card-bg">
-            <img id="bgImgA" alt="" />
-          </div>
+          <div class="card-bg"><img id="bgImgA" alt="" /></div>
           <div class="card-overlay"></div>
           <div class="card-content">
             <div class="character-img-wrapper">
               <div class="character-img">
-                <img id="imgA" alt="" />
+                <img id="imgA" alt="" loading="lazy" />
               </div>
             </div>
             <div class="character-info">
@@ -983,12 +1056,11 @@
               <div class="stat-box">
                 <div class="stat-label">Favorites</div>
                 <div class="stat-number" id="favA"></div>
+                <div class="comparison-info" id="compA"></div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- VS Circle with Buttons -->
         <div
           style="
             display: flex;
@@ -997,7 +1069,7 @@
             gap: 40px;
           "
         >
-          <div class="vs-circle" id="vsCircle">
+          <div class="vs-circle" id="vsCircle" aria-label="Versus">
             <div class="vs-circle-content">
               <div class="vs-text">VS</div>
               <div class="result-icon">✓</div>
@@ -1008,8 +1080,12 @@
               id="charBName"
               style="color: #667eea; font-weight: 800"
             ></span>
-            <span id="comparisonVerb" style="color: rgba(255, 255, 255, 0.7)">
-              has ____ Favorites Than
+            <span style="color: rgba(255, 255, 255, 0.7)"> has </span>
+            <span style="color: #10b981; font-weight: 800">MORE</span>
+            <span style="color: rgba(255, 255, 255, 0.7)"> or </span>
+            <span style="color: #ef4444; font-weight: 800">FEWER</span>
+            <span style="color: rgba(255, 255, 255, 0.7)">
+              Favorites than
             </span>
             <span
               id="charAName"
@@ -1018,25 +1094,29 @@
             <span style="color: rgba(255, 255, 255, 0.7)">?</span>
           </div>
           <div class="button-group">
-            <button class="btn btn-higher" id="higherBtn">
+            <button
+              class="btn btn-higher"
+              id="higherBtn"
+              aria-label="Guess higher favorites"
+            >
               <span>↑ Higher</span>
             </button>
-            <button class="btn btn-lower" id="lowerBtn">
+            <button
+              class="btn btn-lower"
+              id="lowerBtn"
+              aria-label="Guess lower favorites"
+            >
               <span>↓ Lower</span>
             </button>
           </div>
         </div>
-
-        <!-- Right Card -->
         <div class="character-card">
-          <div class="card-bg">
-            <img id="bgImgB" alt="" />
-          </div>
+          <div class="card-bg"><img id="bgImgB" alt="" /></div>
           <div class="card-overlay"></div>
           <div class="card-content">
             <div class="character-img-wrapper">
               <div class="character-img">
-                <img id="imgB" alt="" />
+                <img id="imgB" alt="" loading="lazy" />
               </div>
             </div>
             <div class="character-info">
@@ -1045,26 +1125,28 @@
               <div class="stat-box">
                 <div class="stat-label">Favorites</div>
                 <div class="stat-number hidden" id="favB">?</div>
+                <div class="comparison-info" id="compB"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Game Over Modal -->
-    <div class="modal" id="gameOverModal">
+    <div
+      class="modal"
+      id="gameOverModal"
+      role="dialog"
+      aria-labelledby="gameOverTitle"
+      aria-modal="true"
+    >
       <div class="modal-content">
-        <div class="modal-icon">🎮</div>
-        <h2 class="modal-title">Game Over</h2>
+        <div style="font-size: 72px; margin-bottom: 24px">🎮</div>
+        <h2 class="modal-title" id="gameOverTitle">Game Over</h2>
         <p class="modal-subtitle">Amazing effort! Check your stats below...</p>
-
         <div class="new-record hidden" id="newRecord">
           🎉 NEW HIGH SCORE! 🎉
         </div>
-
         <div class="final-score" id="finalScore">0</div>
-
         <div class="stats-grid">
           <div class="stat-item">
             <div class="stat-item-value" id="modalHighScore">0</div>
@@ -1083,693 +1165,401 @@
             <div class="stat-item-label">Total Guesses</div>
           </div>
         </div>
-
         <button class="btn-play-again" id="playAgainBtn">Play Again</button>
       </div>
     </div>
-
     <script>
       class Game {
         constructor() {
           this.chars = [];
+          this.preloadQueue = [];
+          this.recentlyUsed = [];
           this.charA = null;
           this.charB = null;
           this.score = 0;
-          this.highScore = localStorage.getItem("animeHighScore")
-            ? parseInt(localStorage.getItem("animeHighScore"))
-            : 0;
+          this.highScore = this.getLS("animeHighScore", 0);
           this.streak = 0;
-          this.maxStreak = localStorage.getItem("animeMaxStreak")
-            ? parseInt(localStorage.getItem("animeMaxStreak"))
-            : 0;
+          this.maxStreak = this.getLS("animeMaxStreak", 0);
           this.totalGuesses = 0;
           this.correctGuesses = 0;
-          this.animating = false;
-          this.soundEnabled = true;
+          this.animating = !1;
+          this.soundEnabled = !0;
+          this.audioContext = null;
           this.milestones = [5, 10, 15, 20, 25, 30, 40, 50];
           this.milestonesReached = new Set();
+          this.retryCount = 0;
+          this.maxRetries = 3;
           this.init();
           this.loadData();
         }
-
+        getLS(e, t) {
+          try {
+            const a = localStorage.getItem(e);
+            return a ? parseInt(a) : t;
+          } catch (e) {
+            return console.warn("LocalStorage error:", e), t;
+          }
+        }
+        setLS(e, t) {
+          try {
+            localStorage.setItem(e, t);
+          } catch (e) {
+            console.warn("LocalStorage error:", e);
+          }
+        }
         async loadData() {
           try {
-            // Updated character data (December 2024)
-            const charData = [
-              {
-                name: "Lelouch Lamperouge",
-                favorites: 187542,
-                anime: "Code Geass",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/8/406163.jpg",
-              },
-              {
-                name: "Luffy Monkey D.",
-                favorites: 156234,
-                anime: "One Piece",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/9/310307.jpg",
-              },
-              {
-                name: "Levi",
-                favorites: 155876,
-                anime: "Attack on Titan",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/2/241413.jpg",
-              },
-              {
-                name: "L Lawliet",
-                favorites: 139854,
-                anime: "Death Note",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/10/249647.jpg",
-              },
-              {
-                name: "Zoro Roronoa",
-                favorites: 125432,
-                anime: "One Piece",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/3/100534.jpg",
-              },
-              {
-                name: "Killua Zoldyck",
-                favorites: 108765,
-                anime: "Hunter x Hunter",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/2/327920.jpg",
-              },
-              {
-                name: "Light Yagami",
-                favorites: 107543,
-                anime: "Death Note",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/6/63870.jpg",
-              },
-              {
-                name: "Rintarou Okabe",
-                favorites: 106234,
-                anime: "Steins;Gate",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/6/122643.jpg",
-              },
-              {
-                name: "Edward Elric",
-                favorites: 98765,
-                anime: "Fullmetal Alchemist",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/9/72533.jpg",
-              },
-              {
-                name: "Naruto Uzumaki",
-                favorites: 94321,
-                anime: "Naruto",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/12/61330.jpg",
-              },
-              {
-                name: "Guts",
-                favorites: 92543,
-                anime: "Berserk",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/13/284125.jpg",
-              },
-              {
-                name: "Gintoki Sakata",
-                favorites: 85432,
-                anime: "Gintama",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/15/241479.jpg",
-              },
-              {
-                name: "Eren Yeager",
-                favorites: 79876,
-                anime: "Attack on Titan",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/10/216895.jpg",
-              },
-              {
-                name: "Kurisu Makise",
-                favorites: 76543,
-                anime: "Steins;Gate",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/12/492885.jpg",
-              },
-              {
-                name: "Itachi Uchiha",
-                favorites: 75234,
-                anime: "Naruto",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/9/284122.jpg",
-              },
-              {
-                name: "Satoru Gojou",
-                favorites: 89876,
-                anime: "Jujutsu Kaisen",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/15/422168.jpg",
-              },
-              {
-                name: "Mikasa Ackerman",
-                favorites: 62543,
-                anime: "Attack on Titan",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/9/215563.jpg",
-              },
-              {
-                name: "Ken Kaneki",
-                favorites: 58765,
-                anime: "Tokyo Ghoul",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/15/307255.jpg",
-              },
-              {
-                name: "Hachiman Hikigaya",
-                favorites: 57234,
-                anime: "Oregairu",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/4/203555.jpg",
-              },
-              {
-                name: "Kakashi Hatake",
-                favorites: 54321,
-                anime: "Naruto",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/7/284129.jpg",
-              },
-              {
-                name: "Spike Spiegel",
-                favorites: 52543,
-                anime: "Cowboy Bebop",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/11/516853.jpg",
-              },
-              {
-                name: "Saitama",
-                favorites: 51234,
-                anime: "One Punch Man",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/11/294388.jpg",
-              },
-              {
-                name: "Rem",
-                favorites: 48765,
-                anime: "Re:Zero",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/9/311327.jpg",
-              },
-              {
-                name: "Joseph Joestar",
-                favorites: 47543,
-                anime: "JoJo's Bizarre Adventure",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/7/316615.jpg",
-              },
-              {
-                name: "Megumin",
-                favorites: 45234,
-                anime: "Konosuba",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/14/349249.jpg",
-              },
-              {
-                name: "Hitagi Senjougahara",
-                favorites: 44876,
-                anime: "Monogatari",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/11/287902.jpg",
-              },
-              {
-                name: "Kazuto Kirigaya",
-                favorites: 43210,
-                anime: "Sword Art Online",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/7/204821.jpg",
-              },
-              {
-                name: "Arataka Reigen",
-                favorites: 42543,
-                anime: "Mob Psycho 100",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/16/308364.jpg",
-              },
-              {
-                name: "Yato",
-                favorites: 41876,
-                anime: "Noragami",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/3/328158.jpg",
-              },
-              {
-                name: "Mai Sakurajima",
-                favorites: 41234,
-                anime: "Bunny Girl Senpai",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/2/366639.jpg",
-              },
-              {
-                name: "Roy Mustang",
-                favorites: 40543,
-                anime: "Fullmetal Alchemist",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/11/510227.jpg",
-              },
-              {
-                name: "Violet Evergarden",
-                favorites: 39876,
-                anime: "Violet Evergarden",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/9/345616.jpg",
-              },
-              {
-                name: "Zero Two",
-                favorites: 38765,
-                anime: "Darling in the Franxx",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/14/559013.jpg",
-              },
-              {
-                name: "Kiyotaka Ayanokouji",
-                favorites: 37654,
-                anime: "Classroom of the Elite",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/4/539058.jpg",
-              },
-              {
-                name: "Osamu Dazai",
-                favorites: 37123,
-                anime: "Bungo Stray Dogs",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/5/307236.jpg",
-              },
-              {
-                name: "Ichigo Kurosaki",
-                favorites: 36543,
-                anime: "Bleach",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/3/512788.jpg",
-              },
-              {
-                name: "Hisoka Morow",
-                favorites: 35876,
-                anime: "Hunter x Hunter",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/3/174561.jpg",
-              },
-              {
-                name: "Kamina",
-                favorites: 34765,
-                anime: "Tengen Toppa Gurren Lagann",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/7/83946.jpg",
-              },
-              {
-                name: "Shinobu Oshino",
-                favorites: 34234,
-                anime: "Monogatari",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/16/234167.jpg",
-              },
-              {
-                name: "Eikichi Onizuka",
-                favorites: 33876,
-                anime: "GTO",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/8/241475.jpg",
-              },
-              {
-                name: "Saber",
-                favorites: 33210,
-                anime: "Fate Series",
-                image:
-                  "https://cdn.myanimelist.net/images/characters/6/275276.jpg",
-              },
-            ];
-
-            this.chars = this.shuffle(
-              charData.filter(
-                (c) =>
-                  c && typeof c.favorites === "number" && !isNaN(c.favorites)
-              )
-            );
-
-            this.updateUI();
-            this.showTutorial();
-          } catch (error) {
-            console.error("Error:", error);
-            alert("Failed to load character data.");
+            document.getElementById("loadingScreen").classList.remove("hidden");
+            const e = await fetch("anime_characters.json");
+            if (!e.ok) throw new Error("Failed to load characters");
+            const t = await e.json();
+            if (
+              ((this.chars = this.shuffle(
+                t.filter(
+                  (e) =>
+                    e && "number" == typeof e.favorites && !isNaN(e.favorites)
+                )
+              )),
+              0 === this.chars.length)
+            )
+              throw new Error("No valid characters found");
+            document.getElementById("loadingScreen").classList.add("hidden"),
+              this.updateUI(),
+              this.showTutorial();
+          } catch (e) {
+            console.error("Error:", e);
+            this.showError(e.message);
           }
         }
-
+        showError(e) {
+          const t = document.getElementById("loadingScreen");
+          t.innerHTML = `<div class="error-state"><div class="error-title">⚠️ Error Loading</div><div class="error-message">${e}<br><br>Please ensure anime_characters.json is in the same directory.</div><button class="retry-btn" onclick="location.reload()">Retry</button></div>`;
+          t.classList.remove("hidden");
+        }
         init() {
-          this.scoreEl = document.getElementById("score");
-          this.highScoreEl = document.getElementById("highScore");
-          this.streakBadge = document.getElementById("streakBadge");
-          this.streakCount = document.getElementById("streakCount");
-          this.maxStreakEl = document.getElementById("maxStreak");
-          this.finalScoreEl = document.getElementById("finalScore");
-          this.newRecordEl = document.getElementById("newRecord");
-          this.modalEl = document.getElementById("gameOverModal");
-          this.modalHighScoreEl = document.getElementById("modalHighScore");
-          this.modalAccuracyEl = document.getElementById("modalAccuracy");
-          this.modalMaxStreakEl = document.getElementById("modalMaxStreak");
-          this.modalTotalGuessesEl =
-            document.getElementById("modalTotalGuesses");
-          this.vsCircle = document.getElementById("vsCircle");
-          this.milestoneBadge = document.getElementById("milestoneBadge");
-          this.soundToggle = document.getElementById("soundToggle");
-          this.tutorialModal = document.getElementById("tutorialModal");
-          this.startGameBtn = document.getElementById("startGameBtn");
-
-          this.imgA = document.getElementById("imgA");
-          this.nameA = document.getElementById("nameA");
-          this.animeA = document.getElementById("animeA");
-          this.favA = document.getElementById("favA");
-          this.bgImgA = document.getElementById("bgImgA");
-
-          this.imgB = document.getElementById("imgB");
-          this.nameB = document.getElementById("nameB");
-          this.animeB = document.getElementById("animeB");
-          this.favB = document.getElementById("favB");
-          this.bgImgB = document.getElementById("bgImgB");
-
-          this.charAName = document.getElementById("charAName");
-          this.charBName = document.getElementById("charBName");
-          this.comparisonVerb = document.getElementById("comparisonVerb");
-
-          this.higherBtn = document.getElementById("higherBtn");
-          this.lowerBtn = document.getElementById("lowerBtn");
-          this.playAgainBtn = document.getElementById("playAgainBtn");
-
-          this.higherBtn.addEventListener("click", () => this.guess(true));
-          this.lowerBtn.addEventListener("click", () => this.guess(false));
-          this.playAgainBtn.addEventListener("click", () => this.start());
-          this.soundToggle.addEventListener("click", () => this.toggleSound());
-          this.startGameBtn.addEventListener("click", () =>
+          this.els = {
+            score: document.getElementById("score"),
+            highScore: document.getElementById("highScore"),
+            streakBadge: document.getElementById("streakBadge"),
+            streakCount: document.getElementById("streakCount"),
+            maxStreak: document.getElementById("maxStreak"),
+            finalScore: document.getElementById("finalScore"),
+            newRecord: document.getElementById("newRecord"),
+            modal: document.getElementById("gameOverModal"),
+            modalHighScore: document.getElementById("modalHighScore"),
+            modalAccuracy: document.getElementById("modalAccuracy"),
+            modalMaxStreak: document.getElementById("modalMaxStreak"),
+            modalTotalGuesses: document.getElementById("modalTotalGuesses"),
+            vsCircle: document.getElementById("vsCircle"),
+            milestoneBadge: document.getElementById("milestoneBadge"),
+            soundToggle: document.getElementById("soundToggle"),
+            tutorialModal: document.getElementById("tutorialModal"),
+            startGameBtn: document.getElementById("startGameBtn"),
+            showTutorial: document.getElementById("showTutorial"),
+            announcer: document.getElementById("announcer"),
+            imgA: document.getElementById("imgA"),
+            nameA: document.getElementById("nameA"),
+            animeA: document.getElementById("animeA"),
+            favA: document.getElementById("favA"),
+            bgImgA: document.getElementById("bgImgA"),
+            compA: document.getElementById("compA"),
+            imgB: document.getElementById("imgB"),
+            nameB: document.getElementById("nameB"),
+            animeB: document.getElementById("animeB"),
+            favB: document.getElementById("favB"),
+            bgImgB: document.getElementById("bgImgB"),
+            compB: document.getElementById("compB"),
+            charAName: document.getElementById("charAName"),
+            charBName: document.getElementById("charBName"),
+            higherBtn: document.getElementById("higherBtn"),
+            lowerBtn: document.getElementById("lowerBtn"),
+            playAgainBtn: document.getElementById("playAgainBtn"),
+          };
+          this.els.higherBtn.addEventListener("click", () => this.guess(!0));
+          this.els.lowerBtn.addEventListener("click", () => this.guess(!1));
+          this.els.playAgainBtn.addEventListener("click", () => this.start());
+          this.els.soundToggle.addEventListener("click", () =>
+            this.toggleSound()
+          );
+          this.els.startGameBtn.addEventListener("click", () =>
             this.closeTutorial()
           );
-
-          // Keyboard support
+          this.els.showTutorial.addEventListener("click", () =>
+            this.openTutorial()
+          );
           document.addEventListener("keydown", (e) => {
-            if (e.key === "ArrowUp" || e.key === "w" || e.key === "W")
-              this.guess(true);
-            if (e.key === "ArrowDown" || e.key === "s" || e.key === "S")
-              this.guess(false);
+            ("ArrowUp" === e.key || "w" === e.key || "W" === e.key) &&
+              this.guess(!0);
+            ("ArrowDown" === e.key || "s" === e.key || "S" === e.key) &&
+              this.guess(!1);
           });
         }
-
         showTutorial() {
-          if (!localStorage.getItem("animeGameTutorialSeen")) {
-            this.tutorialModal.classList.add("active");
-            localStorage.setItem("animeGameTutorialSeen", "true");
-          } else {
-            this.start();
-          }
+          this.getLS("animeGameTutorialSeen", null)
+            ? this.start()
+            : (this.els.tutorialModal.classList.add("active"),
+              this.setLS("animeGameTutorialSeen", "true"));
         }
-
         closeTutorial() {
-          this.tutorialModal.classList.remove("active");
-          this.start();
+          this.els.tutorialModal.classList.remove("active"), this.start();
         }
-
+        openTutorial() {
+          this.els.tutorialModal.classList.add("active");
+        }
         start() {
-          this.score = 0;
-          this.streak = 0;
-          this.totalGuesses = 0;
-          this.correctGuesses = 0;
-          this.milestonesReached.clear();
-          this.scoreEl.textContent = this.score;
-          this.streakBadge.style.display = "none";
-          this.modalEl.classList.remove("active");
-          this.vsCircle.classList.remove("correct", "incorrect");
-
-          this.charA = this.getRandom();
-          this.charB = this.getRandom();
-          while (this.charA === this.charB) this.charB = this.getRandom();
-
-          this.render();
-          this.enable();
+          (this.score = 0),
+            (this.streak = 0),
+            (this.totalGuesses = 0),
+            (this.correctGuesses = 0),
+            (this.recentlyUsed = []),
+            this.milestonesReached.clear(),
+            (this.els.score.textContent = this.score),
+            this.els.streakBadge.classList.remove("visible"),
+            this.els.modal.classList.remove("active"),
+            this.els.vsCircle.classList.remove("correct", "incorrect"),
+            (this.charA = this.getRandomUnused()),
+            (this.charB = this.getRandomUnused());
+          for (; this.charA === this.charB; )
+            this.charB = this.getRandomUnused();
+          this.render(), this.enable(), this.preloadNext();
         }
-
+        getRandomUnused() {
+          const e = this.chars.filter((e) => !this.recentlyUsed.includes(e));
+          if (0 === e.length)
+            return (
+              (this.recentlyUsed = []),
+              this.chars[Math.floor(Math.random() * this.chars.length)]
+            );
+          const t = e[Math.floor(Math.random() * e.length)];
+          return (
+            this.recentlyUsed.push(t),
+            this.recentlyUsed.length > 20 && this.recentlyUsed.shift(),
+            t
+          );
+        }
+        preloadNext() {
+          const e = [this.getRandomUnused(), this.getRandomUnused()];
+          e.forEach((e) => {
+            const t = new Image();
+            t.src = e.image;
+          });
+        }
         render() {
-          this.imgA.src = this.charA.image;
-          this.nameA.textContent = this.charA.name;
-          this.animeA.textContent = this.charA.anime || "Unknown";
-          this.favA.textContent = this.charA.favorites.toLocaleString();
-          this.bgImgA.src = this.charA.image;
-
-          this.imgB.src = this.charB.image;
-          this.nameB.textContent = this.charB.name;
-          this.animeB.textContent = this.charB.anime || "Unknown";
-          this.favB.textContent = "?";
-          this.favB.className = "stat-number hidden";
-          this.bgImgB.src = this.charB.image;
-
-          // Update comparison text
-          this.charAName.textContent = this.charA.name;
-          this.charBName.textContent = this.charB.name;
+          (this.els.imgA.src = this.charA.image),
+            (this.els.imgA.alt = `Character portrait of ${this.charA.name}`),
+            (this.els.nameA.textContent = this.charA.name),
+            (this.els.animeA.textContent = this.charA.anime || "Unknown Anime"),
+            (this.els.favA.textContent = this.charA.favorites.toLocaleString()),
+            (this.els.bgImgA.src = this.charA.image),
+            this.els.compA.classList.remove("visible"),
+            (this.els.imgB.src = this.charB.image),
+            (this.els.imgB.alt = `Character portrait of ${this.charB.name}`),
+            (this.els.nameB.textContent = this.charB.name),
+            (this.els.animeB.textContent = this.charB.anime || "Unknown Anime"),
+            (this.els.favB.textContent = "?"),
+            (this.els.favB.className = "stat-number hidden"),
+            (this.els.bgImgB.src = this.charB.image),
+            this.els.compB.classList.remove("visible"),
+            (this.els.charAName.textContent = this.charA.name),
+            (this.els.charBName.textContent = this.charB.name);
         }
-
-        async guess(higher) {
+        async guess(e) {
           if (this.animating) return;
-          this.animating = true;
-          this.disable();
-          this.totalGuesses++;
-
-          const correct = higher
+          (this.animating = !0), this.disable(), this.totalGuesses++;
+          const t = e
             ? this.charB.favorites >= this.charA.favorites
             : this.charB.favorites < this.charA.favorites;
-
-          if (correct) this.correctGuesses++;
-
-          this.favB.textContent = this.charB.favorites.toLocaleString();
-          this.favB.className = `stat-number ${
-            correct ? "correct" : "incorrect"
-          }`;
-
-          // Update VS Circle
-          const vsText = this.vsCircle.querySelector(".vs-text");
-          const resultIcon = this.vsCircle.querySelector(".result-icon");
-
-          this.vsCircle.classList.add(correct ? "correct" : "incorrect");
-
-          vsText.classList.add("hidden");
-          resultIcon.classList.add("show");
-          resultIcon.textContent = correct ? "✓" : "✗";
-
-          this.playSound(correct ? "correct" : "incorrect");
-
-          await this.sleep(2000);
-
-          if (correct) {
-            this.score++;
-            this.streak++;
-            this.scoreEl.textContent = this.score;
-            this.updateStreakUI();
-            this.checkMilestones();
-
-            await this.sleep(500);
-
-            // Reset circle for next round
-            this.vsCircle.classList.remove("correct", "incorrect");
-            vsText.classList.remove("hidden");
-            resultIcon.classList.remove("show");
-
-            this.charA = this.charB;
-            this.charB = this.getRandom();
-            while (this.charA === this.charB) this.charB = this.getRandom();
-
-            this.render();
-            this.enable();
-            this.animating = false;
-          } else {
-            await this.sleep(500);
-            this.end();
-          }
+          t && this.correctGuesses++,
+            (this.els.favB.textContent = this.charB.favorites.toLocaleString()),
+            (this.els.favB.className = `stat-number ${
+              t ? "correct" : "incorrect"
+            }`);
+          const a = this.els.vsCircle.querySelector(".vs-text"),
+            s = this.els.vsCircle.querySelector(".result-icon");
+          this.els.vsCircle.classList.add(t ? "correct" : "incorrect"),
+            a.classList.add("hidden"),
+            s.classList.add("show"),
+            (s.textContent = t ? "✓" : "✗"),
+            this.announce(
+              t
+                ? `Correct! ${
+                    this.charB.name
+                  } has ${this.charB.favorites.toLocaleString()} favorites`
+                : `Incorrect. ${
+                    this.charB.name
+                  } has ${this.charB.favorites.toLocaleString()} favorites`
+            );
+          const i = Math.abs(this.charA.favorites - this.charB.favorites),
+            r = (
+              (i / Math.max(this.charA.favorites, this.charB.favorites)) *
+              100
+            ).toFixed(1);
+          (this.els.compB.textContent = `${i.toLocaleString()} difference (${r}%)`),
+            this.els.compB.classList.add("visible"),
+            this.playSound(t ? "correct" : "incorrect"),
+            await this.sleep(2500),
+            t
+              ? (this.score++,
+                this.streak++,
+                (this.els.score.textContent = this.score),
+                this.updateStreakUI(),
+                this.checkMilestones(),
+                await this.sleep(500),
+                this.els.vsCircle.classList.remove("correct", "incorrect"),
+                a.classList.remove("hidden"),
+                s.classList.remove("show"),
+                (this.charA = this.charB),
+                (this.charB = this.getRandomUnused()),
+                this.render(),
+                this.enable(),
+                this.preloadNext(),
+                (this.animating = !1))
+              : (await this.sleep(500), this.end());
         }
-
         checkMilestones() {
-          for (let milestone of this.milestones) {
-            if (
-              this.score === milestone &&
-              !this.milestonesReached.has(milestone)
-            ) {
-              this.milestonesReached.add(milestone);
-              this.showMilestone(milestone);
-            }
-          }
+          for (let e of this.milestones)
+            this.score === e &&
+              !this.milestonesReached.has(e) &&
+              (this.milestonesReached.add(e), this.showMilestone(e));
         }
-
-        showMilestone(milestone) {
-          this.milestoneBadge.textContent = `🎯 ${milestone} POINTS! 🎯`;
-          this.milestoneBadge.classList.add("show");
-          this.playSound("milestone");
-
-          setTimeout(() => {
-            this.milestoneBadge.classList.remove("show");
-          }, 3000);
+        showMilestone(e) {
+          (this.els.milestoneBadge.textContent = `🎯 ${e} POINTS! 🎯`),
+            this.els.milestoneBadge.classList.add("show"),
+            this.playSound("milestone"),
+            this.announce(`Milestone reached: ${e} points!`),
+            setTimeout(() => {
+              this.els.milestoneBadge.classList.remove("show");
+            }, 3e3);
         }
-
         updateStreakUI() {
-          if (this.streak > 0) {
-            this.streakBadge.style.display = "block";
-            this.streakCount.textContent = this.streak;
-          }
+          this.streak > 0 &&
+            (this.els.streakBadge.classList.add("visible"),
+            (this.els.streakCount.textContent = this.streak));
         }
-
         end() {
-          if (this.streak > this.maxStreak) {
-            this.maxStreak = this.streak;
-            localStorage.setItem("animeMaxStreak", this.maxStreak);
-            this.maxStreakEl.textContent = this.maxStreak;
-          }
-
-          const accuracy =
+          this.streak > this.maxStreak &&
+            ((this.maxStreak = this.streak),
+            this.setLS("animeMaxStreak", this.maxStreak),
+            (this.els.maxStreak.textContent = this.maxStreak));
+          const e =
             this.totalGuesses > 0
               ? Math.round((this.correctGuesses / this.totalGuesses) * 100)
               : 0;
-
-          this.finalScoreEl.textContent = this.score;
-          this.modalHighScoreEl.textContent = Math.max(
-            this.score,
-            this.highScore
-          );
-          this.modalAccuracyEl.textContent = accuracy + "%";
-          this.modalMaxStreakEl.textContent = Math.max(
-            this.streak,
-            this.maxStreak
-          );
-          this.modalTotalGuessesEl.textContent = this.totalGuesses;
-
-          if (this.score > this.highScore) {
-            this.highScore = this.score;
-            this.highScoreEl.textContent = this.highScore;
-            localStorage.setItem("animeHighScore", this.highScore);
-            this.newRecordEl.classList.remove("hidden");
-            this.playSound("newRecord");
-          } else {
-            this.newRecordEl.classList.add("hidden");
-          }
-
-          this.modalEl.classList.add("active");
-          this.animating = false;
+          (this.els.finalScore.textContent = this.score),
+            (this.els.modalHighScore.textContent = Math.max(
+              this.score,
+              this.highScore
+            )),
+            (this.els.modalAccuracy.textContent = e + "%"),
+            (this.els.modalMaxStreak.textContent = Math.max(
+              this.streak,
+              this.maxStreak
+            )),
+            (this.els.modalTotalGuesses.textContent = this.totalGuesses),
+            this.score > this.highScore
+              ? ((this.highScore = this.score),
+                (this.els.highScore.textContent = this.highScore),
+                this.setLS("animeHighScore", this.highScore),
+                this.els.newRecord.classList.remove("hidden"),
+                this.playSound("newRecord"),
+                this.announce(`New high score: ${this.score} points!`))
+              : this.els.newRecord.classList.add("hidden"),
+            this.els.modal.classList.add("active"),
+            (this.animating = !1);
         }
-
         updateUI() {
-          this.scoreEl.textContent = this.score;
-          this.highScoreEl.textContent = this.highScore;
-          this.maxStreakEl.textContent = this.maxStreak;
+          (this.els.score.textContent = this.score),
+            (this.els.highScore.textContent = this.highScore),
+            (this.els.maxStreak.textContent = this.maxStreak);
         }
-
         toggleSound() {
-          this.soundEnabled = !this.soundEnabled;
-          this.soundToggle.textContent = this.soundEnabled ? "🔊" : "🔇";
+          (this.soundEnabled = !this.soundEnabled),
+            (this.els.soundToggle.textContent = this.soundEnabled
+              ? "🔊"
+              : "🔇"),
+            this.els.soundToggle.setAttribute(
+              "aria-label",
+              this.soundEnabled ? "Mute sound effects" : "Unmute sound effects"
+            );
         }
-
-        playSound(type) {
+        playSound(e) {
           if (!this.soundEnabled) return;
-
-          const audioContext = new (window.AudioContext ||
-            window.webkitAudioContext)();
-          const now = audioContext.currentTime;
-
-          if (type === "correct") {
-            const osc1 = audioContext.createOscillator();
-            const osc2 = audioContext.createOscillator();
-            const gain = audioContext.createGain();
-
-            osc1.frequency.value = 523.25; // C5
-            osc2.frequency.value = 659.25; // E5
-            gain.gain.setValueAtTime(0.3, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-
-            osc1.connect(gain);
-            osc2.connect(gain);
-            gain.connect(audioContext.destination);
-
-            osc1.start(now);
-            osc2.start(now);
-            osc1.stop(now + 0.2);
-            osc2.stop(now + 0.2);
-          } else if (type === "incorrect") {
-            const osc = audioContext.createOscillator();
-            const gain = audioContext.createGain();
-
-            osc.frequency.setValueAtTime(300, now);
-            osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
-            gain.gain.setValueAtTime(0.3, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-
-            osc.connect(gain);
-            gain.connect(audioContext.destination);
-
-            osc.start(now);
-            osc.stop(now + 0.3);
-          } else if (type === "milestone") {
-            const frequencies = [523.25, 659.25, 783.99];
-            frequencies.forEach((freq, i) => {
-              const osc = audioContext.createOscillator();
-              const gain = audioContext.createGain();
-
-              osc.frequency.value = freq;
-              gain.gain.setValueAtTime(0.2, now + i * 0.15);
-              gain.gain.exponentialRampToValueAtTime(
-                0.01,
-                now + i * 0.15 + 0.15
-              );
-
-              osc.connect(gain);
-              gain.connect(audioContext.destination);
-
-              osc.start(now + i * 0.15);
-              osc.stop(now + i * 0.15 + 0.15);
+          this.audioContext ||
+            (this.audioContext = new (window.AudioContext ||
+              window.webkitAudioContext)());
+          const t = this.audioContext.currentTime;
+          if ("correct" === e) {
+            const e = this.audioContext.createOscillator(),
+              a = this.audioContext.createOscillator(),
+              s = this.audioContext.createGain();
+            (e.frequency.value = 523.25),
+              (a.frequency.value = 659.25),
+              s.gain.setValueAtTime(0.3, t),
+              s.gain.exponentialRampToValueAtTime(0.01, t + 0.2),
+              e.connect(s),
+              a.connect(s),
+              s.connect(this.audioContext.destination),
+              e.start(t),
+              a.start(t),
+              e.stop(t + 0.2),
+              a.stop(t + 0.2);
+          } else if ("incorrect" === e) {
+            const e = this.audioContext.createOscillator(),
+              a = this.audioContext.createGain();
+            e.frequency.setValueAtTime(300, t),
+              e.frequency.exponentialRampToValueAtTime(100, t + 0.3),
+              a.gain.setValueAtTime(0.3, t),
+              a.gain.exponentialRampToValueAtTime(0.01, t + 0.3),
+              e.connect(a),
+              a.connect(this.audioContext.destination),
+              e.start(t),
+              e.stop(t + 0.3);
+          } else if ("milestone" === e)
+            [523.25, 659.25, 783.99].forEach((e, a) => {
+              const s = this.audioContext.createOscillator(),
+                i = this.audioContext.createGain();
+              (s.frequency.value = e),
+                i.gain.setValueAtTime(0.2, t + 0.15 * a),
+                i.gain.exponentialRampToValueAtTime(0.01, t + 0.15 * a + 0.15),
+                s.connect(i),
+                i.connect(this.audioContext.destination),
+                s.start(t + 0.15 * a),
+                s.stop(t + 0.15 * a + 0.15);
             });
-          } else if (type === "newRecord") {
-            const frequencies = [659.25, 783.99, 987.77];
-            frequencies.forEach((freq, i) => {
-              const osc = audioContext.createOscillator();
-              const gain = audioContext.createGain();
-
-              osc.frequency.value = freq;
-              gain.gain.setValueAtTime(0.2, now + i * 0.1);
-              gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.2);
-
-              osc.connect(gain);
-              gain.connect(audioContext.destination);
-
-              osc.start(now + i * 0.1);
-              osc.stop(now + i * 0.1 + 0.2);
+          else if ("newRecord" === e)
+            [659.25, 783.99, 987.77].forEach((e, a) => {
+              const s = this.audioContext.createOscillator(),
+                i = this.audioContext.createGain();
+              (s.frequency.value = e),
+                i.gain.setValueAtTime(0.2, t + 0.1 * a),
+                i.gain.exponentialRampToValueAtTime(0.01, t + 0.1 * a + 0.2),
+                s.connect(i),
+                i.connect(this.audioContext.destination),
+                s.start(t + 0.1 * a),
+                s.stop(t + 0.1 * a + 0.2);
             });
+        }
+        announce(e) {
+          this.els.announcer && (this.els.announcer.textContent = e);
+        }
+        shuffle(e) {
+          const t = [...e];
+          for (let e = t.length - 1; e > 0; e--) {
+            const a = Math.floor(Math.random() * (e + 1));
+            [t[e], t[a]] = [t[a], t[e]];
           }
+          return t;
         }
-
-        getRandom() {
-          return this.chars[Math.floor(Math.random() * this.chars.length)];
-        }
-
-        shuffle(arr) {
-          const a = [...arr];
-          for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-          }
-          return a;
-        }
-
         enable() {
-          this.higherBtn.disabled = false;
-          this.lowerBtn.disabled = false;
+          (this.els.higherBtn.disabled = !1), (this.els.lowerBtn.disabled = !1);
         }
-
         disable() {
-          this.higherBtn.disabled = true;
-          this.lowerBtn.disabled = true;
+          (this.els.higherBtn.disabled = !0), (this.els.lowerBtn.disabled = !0);
         }
-
-        sleep(ms) {
-          return new Promise((resolve) => setTimeout(resolve, ms));
+        sleep(e) {
+          return new Promise((t) => setTimeout(t, e));
         }
       }
-
       new Game();
     </script>
   </body>
