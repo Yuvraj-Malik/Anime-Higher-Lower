@@ -1,0 +1,11 @@
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+generate_characters.py
+script.js
+style.css
+
+# Local Netlify folder
+.netlify
