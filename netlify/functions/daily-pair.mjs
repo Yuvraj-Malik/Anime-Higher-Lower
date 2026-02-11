@@ -106,7 +106,9 @@ export default async (req) => {
       );
     }
 
-    const dateKey = getTodayKey();
+    const url = new URL(req.url);
+    const clientDateKey = url.searchParams.get("dateKey");
+    const dateKey = clientDateKey && /^\d{4}-\d{2}-\d{2}$/.test(clientDateKey) ? clientDateKey : getTodayKey();
     const pair = generateDailyPair(characters, dateKey);
 
     if (!pair) {
@@ -131,16 +133,8 @@ export default async (req) => {
       }
     }
 
-    const now = new Date();
-    const tomorrow = new Date(
-      Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate() + 1,
-        0, 0, 0
-      )
-    );
-    const msUntilReset = tomorrow.getTime() - now.getTime();
+    // nextResetMs is now calculated client-side based on local timezone
+    const msUntilReset = 0;
 
     return new Response(
       JSON.stringify({
@@ -149,7 +143,6 @@ export default async (req) => {
         dateKey: pair.dateKey,
         alreadyPlayed,
         nextResetMs: msUntilReset,
-        nextResetAt: tomorrow.toISOString(),
       }),
       { status: 200, headers }
     );

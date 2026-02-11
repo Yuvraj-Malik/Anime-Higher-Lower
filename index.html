@@ -1289,21 +1289,6 @@
           transform: scale(1.1) rotate(5deg);
         }
       }
-      .progress-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-      }
-      .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #667eea, #f5576c);
-        transition: width 0.3s ease;
-        box-shadow: 0 0 10px rgba(102, 126, 234, 0.8);
-      }
       .char-reveal {
         animation: charReveal 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -1344,36 +1329,36 @@
         }
       }
       .time-attack-timer {
-        position: fixed;
-        top: 100px;
-        left: 50%;
-        transform: translateX(-50%);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
         background: linear-gradient(
           135deg,
-          rgba(239, 68, 68, 0.9),
-          rgba(220, 38, 38, 0.9)
+          rgba(239, 68, 68, 0.95),
+          rgba(220, 38, 38, 0.95)
         );
         color: #fff;
-        padding: 15px 30px;
-        border-radius: 20px;
+        padding: 8px 20px;
+        border-radius: 12px;
         font-size: 24px;
         font-weight: 900;
-        border: 3px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 10px 40px rgba(239, 68, 68, 0.4);
-        z-index: 20;
-        display: none;
+        letter-spacing: 1px;
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 0 4px 20px rgba(239, 68, 68, 0.35);
+        gap: 6px;
       }
       .time-attack-timer.active {
-        display: block;
+        display: flex;
         animation: timerPulse 1s ease-in-out infinite;
       }
       @keyframes timerPulse {
         0%,
         100% {
-          transform: translateX(-50%) scale(1);
+          transform: scale(1);
         }
         50% {
-          transform: translateX(-50%) scale(1.05);
+          transform: scale(1.05);
         }
       }
       .game-mode-selector {
@@ -1691,13 +1676,7 @@
       <div class="loader"></div>
       <div class="loading-text">Loading Characters...</div>
     </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-    </div>
     <div class="combo-indicator" id="comboIndicator"></div>
-    <div class="time-attack-timer" id="timeAttackTimer">
-      ⏱️ <span id="timerValue">60</span>s
-    </div>
     <div
       aria-live="polite"
       aria-atomic="true"
@@ -1867,15 +1846,8 @@
             <div class="mode-btn" id="modeDaily" data-mode="daily">
               <div style="font-size: 20px; margin-bottom: 5px">📅</div>
               <div>Daily Challenge</div>
-              <div
-                style="
-                  font-size: 10px;
-                  margin-top: 3px;
-                  color: rgba(255, 255, 255, 0.6);
-                "
-              >
-                One tough guess!
-              </div>
+              <div style="font-size: 10px; margin-top: 3px; color: rgba(255,255,255,0.6);">One tough guess!</div>
+              <div id="dailyStreakDisplay" style="font-size: 11px; margin-top: 4px; color: #fbbf24; font-weight: 700;"></div>
             </div>
           </div>
         </div>
@@ -1888,14 +1860,8 @@
     </div>
     <div class="header">
       <div class="logo">⚡ Anime Battle</div>
-      <div class="header-actions">
-        <button
-          class="tutorial-link"
-          id="showTutorial"
-          aria-label="Show tutorial"
-        >
-          📖 Tutorial
-        </button>
+      <div class="time-attack-timer" id="timeAttackTimer">
+        💣 <span id="timerValue">60</span>s
       </div>
       <div class="score-container">
         <div class="score-item">
@@ -2179,6 +2145,33 @@
           }
           return id;
         }
+        getDailyStreak() {
+          return parseInt(localStorage.getItem("dailyCorrectStreak") || "0", 10);
+        }
+        getDailyWrong() {
+          return parseInt(localStorage.getItem("dailyWrongCount") || "0", 10);
+        }
+        getDailyTotal() {
+          return parseInt(localStorage.getItem("dailyTotalCount") || "0", 10);
+        }
+        recordDailyResult(correct) {
+          const total = this.getDailyTotal() + 1;
+          localStorage.setItem("dailyTotalCount", String(total));
+          if (correct) {
+            const streak = this.getDailyStreak() + 1;
+            localStorage.setItem("dailyCorrectStreak", String(streak));
+          } else {
+            localStorage.setItem("dailyCorrectStreak", "0");
+            const wrong = this.getDailyWrong() + 1;
+            localStorage.setItem("dailyWrongCount", String(wrong));
+          }
+          this.updateDailyStreak();
+        }
+        updateDailyStreak() {
+          const streak = this.getDailyStreak();
+          const el = document.getElementById("dailyStreakDisplay");
+          if (el) el.textContent = streak > 0 ? `(${streak}🔥)` : "";
+        }
         getLS(e, t) {
           try {
             const a = localStorage.getItem(e);
@@ -2318,7 +2311,6 @@
             animFast: document.getElementById("animFast"),
             tutorialModal: document.getElementById("tutorialModal"),
             startGameBtn: document.getElementById("startGameBtn"),
-            showTutorial: document.getElementById("showTutorial"),
             announcer: document.getElementById("announcer"),
             imgA: document.getElementById("imgA"),
             nameA: document.getElementById("nameA"),
@@ -2346,7 +2338,6 @@
             achievementsClose: document.getElementById("achievementsClose"),
             achievementsList: document.getElementById("achievementsList"),
             achievementNotif: document.getElementById("achievementNotif"),
-            progressFill: document.getElementById("progressFill"),
             comboIndicator: document.getElementById("comboIndicator"),
             timeAttackTimer: document.getElementById("timeAttackTimer"),
             timerValue: document.getElementById("timerValue"),
@@ -2394,9 +2385,6 @@
           this.els.startGameBtn.addEventListener("click", () =>
             this.closeTutorial()
           );
-          this.els.showTutorial.addEventListener("click", () =>
-            this.openTutorial()
-          );
           this.els.modeClassic.addEventListener("click", () =>
             this.selectMode("classic")
           );
@@ -2420,6 +2408,24 @@
           });
           this.updateAnimSpeedUI();
           this.renderAchievements();
+          history.replaceState({ screen: "home" }, "", "");
+          window.addEventListener("popstate", (e) => {
+            if (!e.state || e.state.screen === "home") {
+              if (this.gameActive || this.els.modal.classList.contains("active")) {
+                this.gameActive = false;
+                this.stopTimeAttack();
+                if (this.dailyCountdownInterval) {
+                  clearInterval(this.dailyCountdownInterval);
+                  this.dailyCountdownInterval = null;
+                }
+                this.els.modal.classList.remove("active");
+                this.els.settingsModal.classList.remove("active");
+                this.els.achievementsPanel.classList.remove("visible");
+                this.els.tutorialModal.classList.add("active");
+              }
+            }
+          });
+          this.updateDailyStreak();
         }
         quitGame() {
           (this.gameActive = !1),
@@ -2469,7 +2475,9 @@
           this.els.tutorialModal.classList.add("active");
         }
         closeTutorial() {
-          this.els.tutorialModal.classList.remove("active"), this.start();
+          this.els.tutorialModal.classList.remove("active");
+          history.pushState({ screen: "game" }, "", "");
+          this.start();
         }
         openTutorial() {
           this.els.tutorialModal.classList.add("active");
@@ -2488,7 +2496,6 @@
             this.els.streakBadge.classList.remove("visible"),
             this.els.modal.classList.remove("active"),
             this.els.vsCircle.classList.remove("correct", "incorrect"),
-            (this.els.progressFill.style.width = "0%"),
             this.updateSkipUI(),
             "timeattack" === this.gameMode
               ? (this.startTimeAttack(),
@@ -2505,30 +2512,38 @@
                 this.enable(),
                 this.preloadNext());
         }
+        getLocalDateKey() {
+          const now = new Date();
+          return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+        }
+        getMsUntilLocalMidnight() {
+          const now = new Date();
+          const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 0);
+          return tomorrow.getTime() - now.getTime();
+        }
         async startDailyChallenge() {
           this.els.skipBtn.style.display = "none";
           this.els.quitBtn.style.display = "none";
+          const localDateKey = this.getLocalDateKey();
           try {
-            const resp = await fetch("/api/daily-pair", {
+            const resp = await fetch(`/api/daily-pair?dateKey=${localDateKey}`, {
               headers: { "X-User-Id": this.userId },
             });
             if (!resp.ok) throw new Error("Failed to fetch daily pair");
             const data = await resp.json();
             if (data.alreadyPlayed) {
               this.dailyPlayed = true;
-              this.showDailyAlreadyPlayed(data.nextResetMs);
+              this.showDailyAlreadyPlayed(this.getMsUntilLocalMidnight());
               return;
             }
-            const todayKey = data.dateKey;
             const localKey = localStorage.getItem("dailyPlayedDate");
-            if (localKey === todayKey) {
+            if (localKey === localDateKey) {
               this.dailyPlayed = true;
-              this.showDailyAlreadyPlayed(data.nextResetMs);
+              this.showDailyAlreadyPlayed(this.getMsUntilLocalMidnight());
               return;
             }
             this.dailyPlayed = false;
-            this.dailyDateKey = todayKey;
-            this.dailyNextResetMs = data.nextResetMs;
+            this.dailyDateKey = localDateKey;
             this.charA = data.charA;
             this.charB = data.charB;
             this.render();
@@ -2540,16 +2555,15 @@
         }
         startDailyChallengeFallback() {
           const now = new Date();
-          const todayKey = `${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,"0")}-${String(now.getUTCDate()).padStart(2,"0")}`;
+          const todayKey = this.getLocalDateKey();
           const localKey = localStorage.getItem("dailyPlayedDate");
           if (localKey === todayKey) {
             this.dailyPlayed = true;
-            const tomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()+1, 0, 0, 0));
-            this.showDailyAlreadyPlayed(tomorrow.getTime() - now.getTime());
+            this.showDailyAlreadyPlayed(this.getMsUntilLocalMidnight());
             return;
           }
           this.dailyDateKey = todayKey;
-          const seed = now.getUTCFullYear() * 10000 + (now.getUTCMonth()+1) * 100 + now.getUTCDate();
+          const seed = now.getFullYear() * 10000 + (now.getMonth()+1) * 100 + now.getDate();
           const rng = this.seededRandom(seed);
           let idxA = Math.floor(rng() * this.chars.length);
           let idxB = Math.floor(rng() * this.chars.length);
@@ -2564,16 +2578,13 @@
           this.gameActive = false;
           this.disable();
           const modal = this.els.modal;
-          this.els.finalScore.textContent = "---";
+          this.els.finalScore.textContent = "✔";
           this.els.newRecord.classList.add("hidden");
           const title = modal.querySelector(".modal-title");
           if (title) title.textContent = "Daily Complete!";
           const subtitle = modal.querySelector(".modal-subtitle");
-          if (subtitle) subtitle.textContent = "You already played today's daily challenge. Come back tomorrow!";
-          this.els.modalHighScore.textContent = this.highScore;
-          this.els.modalAccuracy.textContent = "---";
-          this.els.modalMaxStreak.textContent = this.maxStreak;
-          this.els.modalTotalGuesses.textContent = "---";
+          if (subtitle) subtitle.textContent = "You already played today's challenge.";
+          this.setDailyModalStats();
           modal.classList.add("active");
           this.startDailyCountdown(msUntilReset);
         }
@@ -2582,7 +2593,7 @@
           const subtitle = this.els.modal.querySelector(".modal-subtitle");
           const updateCountdown = () => {
             const now = new Date();
-            const tomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()+1, 0, 0, 0));
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 0);
             const diff = tomorrow.getTime() - now.getTime();
             if (diff <= 0) {
               if (subtitle) subtitle.textContent = "New daily challenge available! Click Play Again.";
@@ -2793,9 +2804,10 @@
           if ((await this.sleep(r), "daily" === this.gameMode))
             (this.gameActive = !1),
               this.stopTimeAttack(),
+              (this.lastDailyCorrect = t),
               this.submitDailyResult(t),
               await this.sleep(500),
-              this.end();
+              this.endDaily(t);
           else if (t)
             this.score++,
               this.streak++,
@@ -2839,8 +2851,6 @@
           }
         }
         updateProgress() {
-          const e = Math.min((this.score / 50) * 100, 100);
-          this.els.progressFill.style.width = e + "%";
         }
         showComboIfNeeded() {
           this.consecutiveCorrect >= 3 &&
@@ -2978,6 +2988,52 @@
             (this.els.streakBadge.classList.add("visible"),
             (this.els.streakCount.textContent = this.streak));
         }
+        setDailyModalStats() {
+          const streak = this.getDailyStreak();
+          const wrong = this.getDailyWrong();
+          const total = this.getDailyTotal();
+          const correctCount = total - wrong;
+          const modal = this.els.modal;
+          const statItems = modal.querySelectorAll(".stat-item");
+          if (statItems[0]) {
+            statItems[0].querySelector(".stat-item-value").textContent = total;
+            statItems[0].querySelector(".stat-item-label").textContent = "Total Attempts";
+          }
+          if (statItems[1]) {
+            statItems[1].querySelector(".stat-item-value").textContent = correctCount;
+            statItems[1].querySelector(".stat-item-label").textContent = "Correct";
+          }
+          if (statItems[2]) {
+            statItems[2].querySelector(".stat-item-value").textContent = wrong;
+            statItems[2].querySelector(".stat-item-label").textContent = "Incorrect";
+          }
+          if (statItems[3]) {
+            statItems[3].querySelector(".stat-item-value").textContent = streak;
+            statItems[3].querySelector(".stat-item-label").textContent = "Current Streak";
+          }
+          // Track best streak
+          const bestStreak = parseInt(localStorage.getItem("dailyBestStreak") || "0", 10);
+          if (streak > bestStreak) {
+            localStorage.setItem("dailyBestStreak", String(streak));
+          }
+        }
+        endDaily(correct) {
+          this.gameActive = false;
+          this.animating = false;
+          const modal = this.els.modal;
+          const title = modal.querySelector(".modal-title");
+          const subtitle = modal.querySelector(".modal-subtitle");
+          if (title) title.textContent = correct ? "Correct! 🎉" : "Wrong! 😢";
+          if (subtitle) subtitle.textContent = correct
+            ? `Nice one! Your current streak is ${this.getDailyStreak()}!`
+            : "Better luck tomorrow! Your streak was reset.";
+          this.els.finalScore.textContent = correct ? "✓" : "✗";
+          this.els.newRecord.classList.add("hidden");
+          this.setDailyModalStats();
+          if (correct) this.playSound("correct");
+          modal.classList.add("active");
+          this.saveScoreToServer();
+        }
         end() {
           (this.gameActive = !1),
             this.stopTimeAttack(),
@@ -3015,12 +3071,19 @@
           if (title) title.textContent = "Game Over";
           const subtitle = this.els.modal.querySelector(".modal-subtitle");
           if (subtitle) subtitle.textContent = "Here's how you did!";
+          const statItems = this.els.modal.querySelectorAll(".stat-item");
+          if (statItems[0]) statItems[0].querySelector(".stat-item-label").textContent = "Best Score";
+          if (statItems[1]) statItems[1].querySelector(".stat-item-label").textContent = "Accuracy";
+          if (statItems[2]) statItems[2].querySelector(".stat-item-label").textContent = "Max Streak";
+          if (statItems[3]) statItems[3].querySelector(".stat-item-label").textContent = "Total Guesses";
+          this.els.newRecord.textContent = "🎉 NEW HIGH SCORE! 🎉";
           if (this.dailyCountdownInterval) clearInterval(this.dailyCountdownInterval);
         }
         async submitDailyResult(correct) {
           try {
             localStorage.setItem("dailyPlayedDate", this.dailyDateKey || "");
             this.dailyPlayed = true;
+            this.recordDailyResult(correct);
             await fetch("/api/daily-submit", {
               method: "POST",
               headers: {
